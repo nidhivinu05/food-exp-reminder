@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h1>Chatbot Assistant</h1>
+    <p>Ask anything related to food expiry, storage tips, or general queries 🍓</p>
+
+    <form class="item-form" method="post">
+        <label>
+            Your message:
+            <textarea name="message" rows="3" required>{{ user_message or '' }}</textarea>
+        </label>
+        <div class="form-buttons">
+            <button type="submit" class="btn primary">Send</button>
+        </div>
+    </form>
+
+    {% if user_message and bot_reply %}
+        <div class="chat-box">
+            <div class="chat-message user">
+                <strong>You:</strong> {{ user_message }}
+            </div>
+            <div class="chat-message bot">
+                <strong>Bot:</strong> {{ bot_reply }}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h1>Login</h1>
+
+    <form class="item-form" method="post">
+        <label>
+            Username:
+            <input type="text" name="username" required>
+        </label>
+        <label>
+            Password:
+            <input type="password" name="password" required>
+        </label>
+
+        <div class="form-buttons">
+            <button type="submit" class="btn primary">Login</button>
+            <a href="{{ url_for('register') }}" class="btn secondary">Create new account</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

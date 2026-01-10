@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+    <h1>{{ action }} Food Item</h1>
+
+    <form class="item-form" method="post" enctype="multipart/form-data">
+        <label>
+            Item Name*:
+            <input type="text" name="name" required
+                   value="{% if item %}{{ item.name }}
+                          {% elif prefill_name is defined %}{{ prefill_name }}
+                          {% else %}{% endif %}">
+        </label>
+
+        <label>
+            Purchase Date*:
+            <input type="date" name="purchase_date" required
+                   value="{% if item %}{{ item.purchase_date.isoformat() }}
+                          {% elif prefill_purchase is defined %}{{ prefill_purchase }}
+                          {% else %}{% endif %}">
+        </label>
+
+        <label>
+            Expiry Date (optional if you upload an image):
+            <input type="date" name="expiry_date"
+                   value="{% if item %}{{ item.expiry_date.isoformat() }}
+                          {% elif prefill_expiry is defined %}{{ prefill_expiry }}
+                          {% else %}{% endif %}">
+            <span class="helper-text">
+                You can either type the expiry date here <strong>or</strong> leave it empty and upload an image below 💗
+            </span>
+        </label>
+
+        <label>
+            Quantity:
+            <input type="text" name="quantity"
+                   value="{% if item %}{{ item.quantity }}{% endif %}">
+        </label>
+
+        <label>
+            Notes:
+            <textarea name="notes" rows="3">{% if item %}{{ item.notes }}{% endif %}</textarea>
+        </label>
+
+        <label>
+            Upload expiry date image (optional):
+            <input type="file" name="expiry_image" accept="image/*">
+            <span class="helper-text">
+                Upload a clear photo of the expiry/MFG details. If you leave the expiry date field empty,
+                the app will try to read it automatically from this image ✨
+            </span>
+        </label>
+
+        <div class="form-buttons">
+            <button type="submit" class="btn primary">
+                {{ action }}
+            </button>
+            <a href="{{ url_for('index') }}" class="btn">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

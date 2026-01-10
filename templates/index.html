@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+    <h1>Your Food Items</h1>
+
+    <!-- Status legend -->
+    <div class="status-legend">
+        <span class="status-chip safe">
+            <span class="status-dot safe"></span> Safe (green)
+        </span>
+        <span class="status-chip soon">
+            <span class="status-dot soon"></span> Expiring soon (orange)
+        </span>
+        <span class="status-chip expired">
+            <span class="status-dot expired"></span> Expired (red)
+        </span>
+    </div>
+
+    <div class="tabs">
+        <a href="{{ url_for('index', filter='all') }}"
+           class="tab {% if current_filter == 'all' %}active{% endif %}">
+            All
+        </a>
+        <a href="{{ url_for('index', filter='soon') }}"
+           class="tab {% if current_filter == 'soon' %}active{% endif %}">
+            Expiring soon
+        </a>
+        <a href="{{ url_for('index', filter='expired') }}"
+           class="tab {% if current_filter == 'expired' %}active{% endif %}">
+            Expired
+        </a>
+    </div>
+
+    {% if alerts and current_filter == 'all' %}
+        <div class="alert-box">
+            <h3>⚠ Attention!</h3>
+            <p>The following items are expired or expiring soon:</p>
+            <ul>
+                {% for item in alerts %}
+                    <li>
+                        <strong>{{ item.name }}</strong>
+                        (expires on {{ item.expiry_date.strftime('%d-%m-%Y') }},
+                        {{ item.days_left }} days left)
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <a class="btn primary" href="{{ url_for('add_item') }}">+ Add New Item</a>
+
+    {% if items %}
+        <p class="helper-text">
+            Showing <strong>{{ current_filter|capitalize }}</strong> items,
+            sorted by <strong>days left</strong> (smallest on top).
+        </p>
+
+        <div class="items-table-wrapper">
+            <table class="items-table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Purchase Date</th>
+                    <th>Expiry Date</th>
+                    <th>Days Left</th>
+                    <th>Status</th>
+                    <th>Quantity</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in items %}
+                    <tr class="{{ item.status }}">
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.category or '-' }}</td>
+                        <td>{{ item.purchase_date.strftime('%d-%m-%Y') }}</td>
+                        <td>{{ item.expiry_date.strftime('%d-%m-%Y') }}</td>
+                        <td>{{ item.days_left }}</td>
+                        <td>
+                            {% if item.status == 'expired' %}
+                                <span class="status-chip expired">
+                                    <span class="status-dot expired"></span> Expired
+                                </span>
+                            {% elif item.status == 'expiring_soon' %}
+                                <span class="status-chip soon">
+                                    <span class="status-dot soon"></span> Expiring soon
+                                </span>
+                            {% else %}
+                                <span class="status-chip safe">
+                                    <span class="status-dot safe"></span> Safe
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.quantity or '-' }}</td>
+                        <td>{{ item.notes or '-' }}</td>
+                        <td>
+                            <a class="btn small" href="{{ url_for('edit_item', item_id=item.id) }}">Edit</a>
+                            <form action="{{ url_for('delete_item', item_id=item.id) }}"
+                                  method="post" style="display:inline;">
+                                <button class="btn danger small" type="submit"
+                                        onclick="return confirm('Delete this item?');">
+                                    Delete
+                                </button>
+                            </form>
+                            {% if recipe_suggestions.get(item.id) %}
+                                <button type="button"
+                                        class="btn secondary small"
+                                        onclick="toggleRecipes('{{ item.id }}')"
+                                    Recipe suggestions
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    {% if item.status == 'expiring_soon' and recipe_suggestions.get(item.id) %}
+                        <tr id="recipes-{{ item.id }}" class="recipe-row" style="display: none;">
+                            <td colspan="9" class="recipe-cell">
+                                <span class="recipe-label">🍽 Recipe ideas before this expires:</span>
+                                <ul class="recipe-list">
+                                    {% for r in recipe_suggestions[item.id] %}
+                                        <li>{{ r }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No items found in this view. Try switching tabs or adding a new item 💗</p>
+    {% endif %}
+</div>
+
+<script>
+    function toggleRecipes(itemId) {
+        const row = document.getElementById('recipes-' + itemId);
+        if (!row) return;
+        if (row.style.display === 'table-row') {
+            row.style.display = 'none';
+        } else {
+            row.style.display = 'table-row';
+        }
+    }
+</script>
+
+{% endblock %}

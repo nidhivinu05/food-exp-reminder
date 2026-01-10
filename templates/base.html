@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Food Expiry Reminder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- 💫 Floating fruit background elements -->
+<div class="floating-fruits">
+    <div class="floating-fruit fruit-1">🍓</div>
+    <div class="floating-fruit fruit-2">🍋</div>
+    <div class="floating-fruit fruit-3">🍌</div>
+    <div class="floating-fruit fruit-4">🍉</div>
+    <div class="floating-fruit fruit-5">🍇</div>
+</div>
+
+<nav class="navbar">
+    <div class="logo">Food Expiry Reminder</div>
+    <div class="nav-links">
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('add_item') }}">Add Item</a>
+            <a href="{{ url_for('chat') }}">Chatbot</a>
+            <span class="welcome-text">Hi, {{ current_user.username }}!</span>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>
