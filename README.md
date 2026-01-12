@@ -12,3 +12,5 @@ A mini project to help track food items and their expiry dates.
 
 ## Purpose
 Built as a mini project for academic use.
+ ##UI/UX
+ Has a very nice and interactive ui with easy navigations 
